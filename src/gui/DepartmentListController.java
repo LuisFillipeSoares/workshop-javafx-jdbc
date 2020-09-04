@@ -1,18 +1,26 @@
 package gui;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import application.Main;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import model.entities.Department;
+import model.services.DepartmentService;
 
 public class DepartmentListController implements Initializable {
 
+	private DepartmentService service; //dependencia com o serviço
+	
 	@FXML
 	private TableView<Department> tableViewDepartment;
 	
@@ -25,23 +33,36 @@ public class DepartmentListController implements Initializable {
 	@FXML
 	private Button btNew;
 	
+	private ObservableList<Department> obsList; //carregar os departamentos na obsList futuramente
 	
 	@FXML
 	public void onBtNewAction() {
 		System.out.println("onBtNewAction");
 	}
 	
-	
+	public void setDepartmentService(DepartmentService service) { //para injetar os departamentos
+		this.service = service;
+	}
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		inizializeNodes();
-		
+		initializeNodes();
 	}
 
-	private void inizializeNodes() {
+	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		
+		Stage stage = (Stage) Main.getMainScene().getWindow();
+		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}
-
+	
+	public void updateTableView() { //metodo responsavel por acessar o serviço, carregar os departamentos e jogar na lista
+		if (service == null) {
+			throw new IllegalStateException("Service was null");
+		}
+		List<Department> list = service.findAll(); //pegar os departamentos mocados
+		obsList = FXCollections.observableArrayList(list); //instancia meu obsList pegando os valores da lista
+		tableViewDepartment.setItems(obsList);//carregar os itens na tableView
+	}
 }
