@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 
 
 public class Main extends Application {
+	
+	private static Scene mainScene; // referencia para a cena como atributo que geralmente é privado (boa pratica)
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -17,13 +20,17 @@ public class Main extends Application {
 			ScrollPane scrollPane = loader.load();
 			scrollPane.setFitToHeight(true);
 			scrollPane.setFitToWidth(true);
-			Scene mainScene = new Scene(scrollPane);
+			mainScene = new Scene(scrollPane);
 			primaryStage.setScene(mainScene);
 			primaryStage.setTitle("Sample JavaFX application");
 			primaryStage.show();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static Scene getMainScene() { //referencia get publica metodo, publica, retornando o mainScene que é privado
+		return mainScene;
 	}
 	
 	public static void main(String[] args) {
